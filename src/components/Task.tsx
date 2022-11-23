@@ -6,14 +6,15 @@ import { useState } from 'react';
 
 interface IProps {
   task: ITask;
-  onDelete: (id: number) => void;
-  onToggle: (id: number) => void;
+  onDelete: (id: string) => void;
+  onToggle: (id: string) => void;
   onEdit: (task: ITask) => void;
 }
 
 const Task = (props: IProps) => {
   const { task, onDelete, onToggle, onEdit } = props;
   const [editMode, setEditMode] = useState(false);
+
   const checkDate = () => {
     return dayjs(task.data) > dayjs();
   };

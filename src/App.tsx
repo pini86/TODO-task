@@ -1,12 +1,35 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Tasks from './components/Tasks';
 import AddTask from './components/AddTask';
 import { ITask } from './types/Types';
 
-const BASE_URL = 'http://localhost:5000/tasks';
+import { initializeApp } from 'firebase/app';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDoc,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from 'firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyC4bb_aYRxTsgt0p_LKJMIMyDRaiQ5Eqhc',
+  authDomain: 'todo-project-a29e2.firebaseapp.com',
+  projectId: 'todo-project-a29e2',
+  storageBucket: 'todo-project-a29e2.appspot.com',
+  messagingSenderId: '405859165789',
+  appId: '1:405859165789:web:06a1b811ebdf009d4dcfb4',
+  measurementId: 'G-T3XQ2BX9PF',
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const App = () => {
   const [showAddTask, setShowAddTask] = useState(false);
@@ -22,81 +45,49 @@ const App = () => {
   }, []);
 
   const fetchTasks = async () => {
-    const res = await fetch(BASE_URL);
-    const data = await res.json();
+    const data: ITask[] = [];
+    const docSnap = await getDocs(collection(db, 'tasks'));
+
+    docSnap.forEach((doc) => {
+      data.push({ ...(doc.data() as ITask), id: doc.id });
+    });
 
     return data;
   };
 
-  const fetchTask = async (id: number) => {
-    const res = await fetch(BASE_URL + `/${id}`);
-    const data = await res.json();
+  const fetchTask = async (id: string) => {
+    const docRef = doc(db, 'tasks', id);
+    const docSnap = await getDoc(docRef);
 
-    return data;
+    return docSnap.data();
   };
 
   const addTask = async (task: ITask) => {
-    const res = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(task),
-    });
+    const docRef = await addDoc(collection(db, 'tasks'), task);
+    task = { ...task, id: docRef.id };
 
-    const data = await res.json();
-
-    setTasks([...tasks, data]);
-
-    // const id = Math.floor(Math.random() * 10000) + 1
-    // const newTask = { id, ...task }
-    // setTasks([...tasks, newTask])
+    setTasks([...tasks, task]);
   };
 
-  const deleteTask = async (id: number) => {
-    const res = await fetch(BASE_URL + `/${id}`, {
-      method: 'DELETE',
-    });
-
-    res.status === 200
-      ? setTasks(tasks.filter((task) => task.id !== id))
-      : alert('Error Deleting This Task');
+  const deleteTask = async (id: string) => {
+    await deleteDoc(doc(db, 'tasks', id));
+    setTasks(tasks.filter((task) => task.id !== id));
   };
 
-  const toggleComplete = async (id: number) => {
-    const taskToToggle = await fetchTask(id);
-    const updTask = { ...taskToToggle, complete: !taskToToggle.complete };
-
-    const res = await fetch(BASE_URL + `/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(updTask),
+  const toggleComplete = async (id: string) => {
+    const taskToToggle = (await fetchTask(id)) as ITask;
+    await updateDoc(doc(db, 'tasks', id), {
+      complete: !taskToToggle.complete,
     });
 
-    const data = await res.json();
-
-    setTasks(tasks.map((task) => (task.id === id ? { ...task, complete: data.complete } : task)));
+    setTasks(tasks.map((task) => (task.id === id ? { ...task, complete: !task.complete } : task)));
   };
 
   const editTask = async (task: ITask) => {
-    const taskOrigin = await fetchTask(task.id);
-    const updTask = { ...taskOrigin, ...task };
-
-    const res = await fetch(BASE_URL + `/${task.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(updTask),
+    await updateDoc(doc(db, 'tasks', task.id), {
+      ...task,
     });
-
-    res.status === 200
-      ? setTasks(
-          tasks.map((taskCurrent) => (taskCurrent.id === task.id ? { ...task } : taskCurrent))
-        )
-      : alert('Error Updating This Task');
+    setTasks(tasks.map((taskCurrent) => (taskCurrent.id === task.id ? { ...task } : taskCurrent)));
   };
 
   return (

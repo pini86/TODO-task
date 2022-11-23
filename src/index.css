@@ -46,10 +46,6 @@ body {
   outline: none;
 }
 
-.btn .btn:active {
-  transform: scale(0.98);
-}
-
 .btn-block {
   display: block;
   width: 100%;
@@ -105,8 +101,4 @@ body {
 footer {
   margin-top: 30px;
   text-align: center;
-}
-
-.about {
-  margin: 0 auto;
 }

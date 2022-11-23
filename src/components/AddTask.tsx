@@ -6,11 +6,10 @@ interface IProps {
   editTask?: ITask;
 }
 
+const EMPTY_TASK = { title: '', desc: '', data: '', id: '', complete: false, filename: '' };
+
 const AddTask = (props: IProps) => {
-  const {
-    onAdd,
-    editTask = { title: '', desc: '', data: '', id: 0, complete: false, filename: '' },
-  } = props;
+  const { onAdd, editTask = EMPTY_TASK } = props;
   const [title, setTitle] = useState(editTask.title);
   const [desc, setDesc] = useState(editTask.desc);
   const [data, setData] = useState(editTask.data);
@@ -18,21 +17,8 @@ const AddTask = (props: IProps) => {
   const [filename, setFilename] = useState(editTask.filename);
   const id = editTask.id;
 
-  const HandleFileName = (event: React.FormEvent<HTMLInputElement>) => {
-    //const file = picture[0];
-    console.log(event.currentTarget.value);
-    const file = event.currentTarget.value[0];
-    //setFilename(URL.createObjectURL(event.currentTarget.value));
-    setFilename(event.currentTarget.value);
-    //setFilename((e.target.files as FileList)[0].name);
-  };
-  const onSubmit = (event: React.SyntheticEvent) => {
-    event.preventDefault();
-
-    if (!title) {
-      alert('Please add a task');
-      return;
-    }
+  const onSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
 
     onAdd({
       title,
@@ -55,6 +41,7 @@ const AddTask = (props: IProps) => {
       <div className="form-control">
         <label>Title</label>
         <input
+          required
           type="text"
           placeholder="Add title"
           value={title}
@@ -84,7 +71,7 @@ const AddTask = (props: IProps) => {
         <input
           type="file"
           placeholder="Add filename"
-          onChange={(e) => setFilename((e.target.files as FileList)[0].name)}
+          onChange={(e) => setFilename(URL.createObjectURL((e.target.files as FileList)[0]))}
         />
       </div>
       <div className="form-control form-control-check">

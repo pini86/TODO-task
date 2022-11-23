@@ -2,7 +2,7 @@ export interface ITask {
   title: string;
   desc: string;
   data: string;
-  id: number;
+  id: string;
   complete: boolean;
   filename: string;
 }

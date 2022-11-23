@@ -6,6 +6,7 @@ interface IProps {
 
 const Button = (props: IProps) => {
   const { color = 'steelblue', text, onClick } = props;
+
   return (
     <button onClick={onClick} style={{ backgroundColor: color }} className="btn">
       {text}
