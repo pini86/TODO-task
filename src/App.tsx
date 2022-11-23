@@ -11,7 +11,6 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDoc,
   getDocs,
   doc,
   deleteDoc,
@@ -36,15 +35,15 @@ const App = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
   useEffect(() => {
-    const getTasks = async () => {
-      const tasksFromServer = await fetchTasks();
+    const initTasks = async () => {
+      const tasksFromServer = await getAllTasks();
       setTasks(tasksFromServer);
     };
 
-    getTasks();
+    initTasks();
   }, []);
 
-  const fetchTasks = async () => {
+  const getAllTasks = async () => {
     const data: ITask[] = [];
     const docSnap = await getDocs(collection(db, 'tasks'));
 
@@ -53,13 +52,6 @@ const App = () => {
     });
 
     return data;
-  };
-
-  const fetchTask = async (id: string) => {
-    const docRef = doc(db, 'tasks', id);
-    const docSnap = await getDoc(docRef);
-
-    return docSnap.data();
   };
 
   const addTask = async (task: ITask) => {
@@ -72,15 +64,6 @@ const App = () => {
   const deleteTask = async (id: string) => {
     await deleteDoc(doc(db, 'tasks', id));
     setTasks(tasks.filter((task) => task.id !== id));
-  };
-
-  const toggleComplete = async (id: string) => {
-    const taskToToggle = (await fetchTask(id)) as ITask;
-    await updateDoc(doc(db, 'tasks', id), {
-      complete: !taskToToggle.complete,
-    });
-
-    setTasks(tasks.map((task) => (task.id === id ? { ...task, complete: !task.complete } : task)));
   };
 
   const editTask = async (task: ITask) => {
@@ -96,7 +79,7 @@ const App = () => {
         <Header onAdd={() => setShowAddTask(!showAddTask)} showAdd={showAddTask} />
         {showAddTask && <AddTask onAdd={addTask} />}
         {tasks.length > 0 ? (
-          <Tasks tasks={tasks} onEdit={editTask} onDelete={deleteTask} onToggle={toggleComplete} />
+          <Tasks tasks={tasks} onEdit={editTask} onDelete={deleteTask} />
         ) : (
           'Sorry, but no current tasks'
         )}

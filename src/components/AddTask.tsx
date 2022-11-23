@@ -10,30 +10,12 @@ const EMPTY_TASK = { title: '', desc: '', data: '', id: '', complete: false, fil
 
 const AddTask = (props: IProps) => {
   const { onAdd, editTask = EMPTY_TASK } = props;
-  const [title, setTitle] = useState(editTask.title);
-  const [desc, setDesc] = useState(editTask.desc);
-  const [data, setData] = useState(editTask.data);
-  const [complete, setComplete] = useState(editTask.complete);
-  const [filename, setFilename] = useState(editTask.filename);
-  const id = editTask.id;
+  const [task, setTask] = useState(editTask);
 
   const onSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-
-    onAdd({
-      title,
-      desc,
-      data,
-      complete,
-      id,
-      filename,
-    });
-
-    setTitle('');
-    setDesc('');
-    setData('');
-    setFilename('');
-    setComplete(false);
+    onAdd(task);
+    setTask(EMPTY_TASK);
   };
 
   return (
@@ -44,8 +26,8 @@ const AddTask = (props: IProps) => {
           required
           type="text"
           placeholder="Add title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={task.title}
+          onChange={(e) => setTask({ ...task, title: e.target.value })}
         />
       </div>
       <div className="form-control">
@@ -53,8 +35,8 @@ const AddTask = (props: IProps) => {
         <input
           type="text"
           placeholder="Add description"
-          value={desc}
-          onChange={(e) => setDesc(e.target.value)}
+          value={task.desc}
+          onChange={(e) => setTask({ ...task, desc: e.target.value })}
         />
       </div>
       <div className="form-control">
@@ -62,24 +44,34 @@ const AddTask = (props: IProps) => {
         <input
           type="datetime-local"
           placeholder="Add Day & Time"
-          value={data}
-          onChange={(e) => setData(e.target.value)}
+          value={task.data}
+          onChange={(e) => setTask({ ...task, data: e.target.value })}
         />
       </div>
       <div className="form-control">
-        <label>Filename {filename!}</label>
+        <label>Filename {task.filename!}</label>
         <input
           type="file"
           placeholder="Add filename"
-          onChange={(e) => setFilename(URL.createObjectURL((e.target.files as FileList)[0]))}
+          onChange={(e) =>
+            setTask({
+              ...task,
+              filename: URL.createObjectURL((e.target.files as FileList)[0]),
+            })
+          }
         />
       </div>
       <div className="form-control form-control-check">
         <label>Set complete</label>
         <input
           type="checkbox"
-          checked={complete}
-          onChange={(e) => setComplete(e.currentTarget.checked)}
+          checked={task.complete}
+          onChange={(e) =>
+            setTask({
+              ...task,
+              complete: e.currentTarget.checked,
+            })
+          }
         />
       </div>
 

@@ -7,12 +7,11 @@ import { useState } from 'react';
 interface IProps {
   task: ITask;
   onDelete: (id: string) => void;
-  onToggle: (id: string) => void;
   onEdit: (task: ITask) => void;
 }
 
 const Task = (props: IProps) => {
-  const { task, onDelete, onToggle, onEdit } = props;
+  const { task, onDelete, onEdit } = props;
   const [editMode, setEditMode] = useState(false);
 
   const checkDate = () => {
@@ -27,7 +26,8 @@ const Task = (props: IProps) => {
 
   const HandleComlete = (event: React.SyntheticEvent) => {
     event.stopPropagation();
-    onToggle(task.id);
+    const toggledTask = { ...task, complete: !task.complete };
+    onEdit(toggledTask);
   };
 
   const HandleDelete = (event: React.SyntheticEvent) => {
