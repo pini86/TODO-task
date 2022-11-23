@@ -1,10 +1,22 @@
+/** @module Header */
+
 import Button from './Button';
 
+/**
+ * The Header properties.
+ *
+ * @typedef {object} IProps
+ * @property {VoidFunction} onAdd - add task function.
+ * @property {boolean} showAdd - show addTask form.
+ */
 interface IProps {
   onAdd: () => void;
   showAdd: boolean;
 }
 
+/** Header component
+ * @param {Object} props All props of this component
+ */
 const Header = (props: IProps) => {
   const { onAdd, showAdd } = props;
 

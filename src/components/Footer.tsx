@@ -1,3 +1,5 @@
+/** @module Footer */
+
 const Footer = () => {
   return (
     <footer>

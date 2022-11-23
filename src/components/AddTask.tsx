@@ -1,17 +1,37 @@
+/** @module AddTask */
+
 import { useState } from 'react';
 import { ITask } from '../types/Types';
 
+/**
+ * The AddTask properties.
+ *
+ * @typedef {object} IProps
+ * @property {VoidFunction} onAdd - onAdd function.
+ * @property {object<ITask>} editTask - edited task
+ */
 interface IProps {
   onAdd: (task: ITask) => void;
   editTask?: ITask;
 }
 
+/** Empty task object for create new task */
 const EMPTY_TASK = { title: '', desc: '', data: '', id: '', complete: false, filename: '' };
 
+/** AddTask component
+ * @param {Object} props All props of this component
+ */
 const AddTask = (props: IProps) => {
   const { onAdd, editTask = EMPTY_TASK } = props;
+
+  /** initialization state
+   * @param {object<ITask>} task - current task
+   */
   const [task, setTask] = useState(editTask);
 
+  /** onSubmit handler
+   * @param {object<SyntheticEvent>} event- submit event
+   */
   const onSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     onAdd(task);

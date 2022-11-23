@@ -1,3 +1,4 @@
+/** Description interface task object*/
 export interface ITask {
   title: string;
   desc: string;
