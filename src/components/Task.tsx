@@ -77,7 +77,10 @@ const Task = (props: IProps) => {
         >
           <h3>
             <SlCheck style={{ color: task.complete ? 'green' : 'red' }} onClick={HandleComlete} />
-            {task.title} <SlClose style={{ color: 'red' }} onClick={HandleDelete} />
+            <p style={{ textDecoration: task.complete ? 'line-through double #ff0000' : 'none' }}>
+              {task.title}
+            </p>
+            <SlClose style={{ color: 'red' }} onClick={HandleDelete} />
           </h3>
           <p>{task.desc}</p>
           <p>{task.data}</p>

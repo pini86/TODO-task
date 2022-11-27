@@ -55,6 +55,11 @@ body {
   margin: 5px;
   padding: 10px 20px;
   cursor: pointer;
+  border-radius: 5px;
+}
+
+.task:hover {
+  scale: 1.02;
 }
 
 .task h3 {
